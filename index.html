@@ -1,0 +1,976 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>JLPT N5 Test — Minna no Nihongo Lessons 6, 7, 8</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --green: #1D9E75;
+    --green-light: #E1F5EE;
+    --green-dark: #0F6E56;
+    --red: #E24B4A;
+    --red-light: #FCEBEB;
+    --bg: #F7F6F2;
+    --card: #FFFFFF;
+    --text: #1a1a1a;
+    --text-muted: #6b6b6b;
+    --border: rgba(0,0,0,0.1);
+    --radius: 12px;
+    --radius-sm: 8px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', 'Noto Sans JP', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  .screen { display: none; }
+  .screen.active { display: flex; }
+
+  /* START */
+  #start-screen {
+    min-height: 100vh;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1rem;
+  }
+
+  .start-card {
+    background: var(--card);
+    border-radius: 20px;
+    padding: 2.5rem 2rem;
+    max-width: 460px;
+    width: 100%;
+    box-shadow: 0 4px 40px rgba(0,0,0,0.08);
+    text-align: center;
+  }
+
+  .flag { font-size: 48px; margin-bottom: 1rem; }
+
+  .start-card h1 {
+    font-size: 22px;
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: var(--text);
+  }
+
+  .start-card .subtitle {
+    font-size: 14px;
+    color: var(--text-muted);
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+  }
+
+  .info-row {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    padding: 1rem;
+    background: var(--bg);
+    border-radius: var(--radius-sm);
+    flex-wrap: wrap;
+  }
+
+  .info-item { text-align: center; min-width: 90px; }
+  .info-item .val {
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--green);
+  }
+  .info-item .lbl {
+    font-size: 11px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .name-input {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-size: 15px;
+    font-family: inherit;
+    outline: none;
+    margin-bottom: 12px;
+    background: var(--bg);
+    color: var(--text);
+    transition: border-color 0.2s;
+  }
+
+  .name-input:focus {
+    border-color: var(--green);
+    background: #fff;
+  }
+
+  .btn-start {
+    width: 100%;
+    padding: 14px;
+    background: var(--green);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-size: 16px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+  }
+
+  .btn-start:hover { background: var(--green-dark); }
+  .btn-start:active { transform: scale(0.98); }
+
+  /* TEST */
+  #test-screen {
+    min-height: 100vh;
+    flex-direction: column;
+    align-items: center;
+    padding: 1rem;
+  }
+
+  .test-wrapper {
+    width: 100%;
+    max-width: 720px;
+  }
+
+  .top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .q-info {
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+
+  .q-info strong {
+    color: var(--text);
+    font-weight: 600;
+  }
+
+  .timer {
+    padding: 6px 14px;
+    border-radius: 20px;
+    background: var(--card);
+    border: 1.5px solid var(--border);
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text);
+    transition: all 0.3s;
+  }
+
+  .timer.warning {
+    border-color: var(--red);
+    color: var(--red);
+    background: var(--red-light);
+  }
+
+  .progress-track {
+    height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    margin-bottom: 1.2rem;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 4px;
+    background: var(--green);
+    border-radius: 2px;
+    transition: width 0.4s ease;
+  }
+
+  .dots-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-bottom: 1rem;
+  }
+
+  .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--border);
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .dot.answered { background: var(--green); }
+  .dot.current { background: var(--green-dark); transform: scale(1.25); }
+
+  .question-card {
+    background: var(--card);
+    border-radius: 20px;
+    padding: 1.8rem;
+    box-shadow: 0 2px 20px rgba(0,0,0,0.06);
+    margin-bottom: 1rem;
+  }
+
+  .section-tag {
+    display: inline-block;
+    padding: 3px 10px;
+    background: var(--green-light);
+    color: var(--green-dark);
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 12px;
+  }
+
+  .passage-box {
+    background: var(--bg);
+    border-left: 3px solid var(--green);
+    padding: 14px 16px;
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    margin-bottom: 16px;
+    font-size: 16px;
+    font-family: 'Noto Sans JP', sans-serif;
+    line-height: 2;
+    color: var(--text);
+    white-space: pre-line;
+  }
+
+  .q-text {
+    font-size: 16px;
+    line-height: 1.8;
+    color: var(--text);
+    margin-bottom: 16px;
+    font-family: 'Noto Sans JP', sans-serif;
+    white-space: pre-line;
+  }
+
+  .options {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .opt-btn {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px 16px;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--bg);
+    color: var(--text);
+    font-size: 15px;
+    font-family: 'Noto Sans JP', 'DM Sans', sans-serif;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.15s;
+    line-height: 1.6;
+  }
+
+  .opt-btn:hover {
+    border-color: var(--green);
+    background: var(--green-light);
+  }
+
+  .opt-btn.selected {
+    border-color: var(--green);
+    background: var(--green-light);
+    color: var(--green-dark);
+  }
+
+  .opt-btn.correct {
+    border-color: var(--green);
+    background: var(--green-light);
+    color: var(--green-dark);
+  }
+
+  .opt-btn.wrong {
+    border-color: var(--red);
+    background: var(--red-light);
+    color: #7a1f1f;
+  }
+
+  .opt-btn.disabled {
+    cursor: default;
+    pointer-events: none;
+  }
+
+  .opt-letter {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.06);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+    flex-shrink: 0;
+    font-family: 'DM Sans', sans-serif;
+    margin-top: 1px;
+  }
+
+  .nav-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .btn-nav {
+    padding: 10px 24px;
+    border-radius: var(--radius-sm);
+    border: 1.5px solid var(--border);
+    background: var(--card);
+    color: var(--text);
+    font-size: 14px;
+    font-weight: 500;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .btn-nav:hover {
+    border-color: var(--green);
+    color: var(--green);
+  }
+
+  .btn-nav.primary {
+    background: var(--green);
+    color: #fff;
+    border-color: var(--green);
+  }
+
+  .btn-nav.primary:hover {
+    background: var(--green-dark);
+    border-color: var(--green-dark);
+    color: #fff;
+  }
+
+  .btn-nav.danger {
+    background: var(--red);
+    color: #fff;
+    border-color: var(--red);
+  }
+
+  .review-note {
+    margin-top: 14px;
+    padding: 12px 14px;
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  .review-note.correct {
+    background: var(--green-light);
+    color: var(--green-dark);
+  }
+
+  .review-note.wrong {
+    background: var(--red-light);
+    color: #7a1f1f;
+  }
+
+  /* RESULT */
+  #result-screen {
+    min-height: 100vh;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1rem;
+  }
+
+  .result-card {
+    background: var(--card);
+    border-radius: 20px;
+    padding: 2.5rem 2rem;
+    max-width: 520px;
+    width: 100%;
+    box-shadow: 0 4px 40px rgba(0,0,0,0.08);
+  }
+
+  .result-card h2 {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+
+  .result-card .r-sub {
+    font-size: 14px;
+    color: var(--text-muted);
+    margin-bottom: 1.5rem;
+  }
+
+  .score-big {
+    text-align: center;
+    padding: 1.5rem;
+    background: var(--bg);
+    border-radius: var(--radius);
+    margin-bottom: 1.2rem;
+  }
+
+  .score-big .score-num {
+    font-size: 52px;
+    font-weight: 700;
+    color: var(--green);
+    line-height: 1;
+  }
+
+  .score-big .score-total {
+    font-size: 18px;
+    color: var(--text-muted);
+    margin-top: 4px;
+  }
+
+  .score-big .score-pct {
+    font-size: 14px;
+    color: var(--text-muted);
+    margin-top: 6px;
+  }
+
+  .stats-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 1.2rem;
+  }
+
+  .stat-box {
+    background: var(--bg);
+    border-radius: var(--radius-sm);
+    padding: 12px;
+    text-align: center;
+  }
+
+  .stat-box .sv {
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .stat-box .sl {
+    font-size: 11px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 2px;
+  }
+
+  .section-breakdown { margin-bottom: 1.5rem; }
+
+  .section-breakdown h3 {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 10px;
+  }
+
+  .sec-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+
+  .sec-name {
+    font-size: 13px;
+    width: 95px;
+    flex-shrink: 0;
+    color: var(--text-muted);
+  }
+
+  .sec-bar-wrap {
+    flex: 1;
+    height: 6px;
+    background: var(--border);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  .sec-bar {
+    height: 6px;
+    background: var(--green);
+    border-radius: 3px;
+    transition: width 0.6s ease;
+  }
+
+  .sec-score {
+    font-size: 13px;
+    font-weight: 600;
+    width: 46px;
+    text-align: right;
+    color: var(--text);
+  }
+
+  .grade-badge {
+    text-align: center;
+    padding: 8px;
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 1.2rem;
+  }
+
+  .grade-pass { background: var(--green-light); color: var(--green-dark); }
+  .grade-fail { background: var(--red-light); color: #7a1f1f; }
+
+  .btn-restart {
+    width: 100%;
+    padding: 14px;
+    background: var(--green);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-size: 15px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .btn-restart:hover { background: var(--green-dark); }
+
+  .result-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  @media (max-width: 480px) {
+    .result-actions { grid-template-columns: 1fr; }
+    .start-card, .result-card { padding: 1.8rem 1.2rem; }
+    .question-card { padding: 1.2rem; }
+    .score-big .score-num { font-size: 40px; }
+    .nav-row { flex-wrap: wrap; }
+    .btn-nav { flex: 1 1 auto; }
+  }
+</style>
+</head>
+<body>
+
+<div id="start-screen" class="screen active">
+  <div class="start-card">
+    <div class="flag">🎌</div>
+    <h1>JLPT N5 Test Paper</h1>
+    <p class="subtitle">みんなの日本語 第6課・第7課・第8課</p>
+    <div class="info-row">
+      <div class="info-item"><div class="val">35</div><div class="lbl">Questions</div></div>
+      <div class="info-item"><div class="val">35</div><div class="lbl">Marks</div></div>
+      <div class="info-item"><div class="val">30</div><div class="lbl">Minutes</div></div>
+    </div>
+    <input class="name-input" id="student-name" type="text" placeholder="Enter your name..." maxlength="40" />
+    <button class="btn-start" onclick="startTest()">Start Test</button>
+  </div>
+</div>
+
+<div id="test-screen" class="screen">
+  <div class="test-wrapper">
+    <div class="top-bar">
+      <div class="q-info">Question <strong id="q-num">1</strong> of <strong id="q-total-top">35</strong></div>
+      <div class="timer" id="timer">30:00</div>
+    </div>
+    <div class="progress-track"><div class="progress-fill" id="prog" style="width:0%"></div></div>
+    <div class="dots-row" id="dots-row"></div>
+    <div class="question-card">
+      <div class="section-tag" id="sec-tag">Section 1 — MCQ</div>
+      <div id="passage-area"></div>
+      <div class="q-text" id="q-text"></div>
+      <div class="options" id="options"></div>
+      <div id="review-note"></div>
+    </div>
+    <div class="nav-row">
+      <button class="btn-nav" onclick="prevQ()">← Back</button>
+      <button class="btn-nav danger" onclick="confirmSubmit()">Submit Test</button>
+      <button class="btn-nav primary" id="next-btn" onclick="nextQ()">Next →</button>
+    </div>
+  </div>
+</div>
+
+<div id="result-screen" class="screen">
+  <div class="result-card">
+    <h2 id="r-name"></h2>
+    <p class="r-sub">JLPT N5 Test Result</p>
+    <div class="score-big">
+      <div class="score-num" id="r-score"></div>
+      <div class="score-total">out of 35 marks</div>
+      <div class="score-pct" id="r-pct"></div>
+    </div>
+    <div class="stats-row">
+      <div class="stat-box"><div class="sv" id="r-correct"></div><div class="sl">Correct</div></div>
+      <div class="stat-box"><div class="sv" id="r-wrong"></div><div class="sl">Wrong</div></div>
+      <div class="stat-box"><div class="sv" id="r-skip"></div><div class="sl">Skipped</div></div>
+    </div>
+    <div class="grade-badge" id="r-grade"></div>
+    <div class="section-breakdown">
+      <h3>Section Breakdown</h3>
+      <div id="r-sections"></div>
+    </div>
+    <div class="result-actions">
+      <button class="btn-nav" onclick="reviewAnswers()">Review Answers</button>
+      <button class="btn-restart" onclick="restartTest()">Take Test Again</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script>
+  (function () {
+    emailjs.init({
+      publicKey: "PzdBAGGoRuRxcWb0B"
+    });
+  })();
+</script>
+
+<script>
+const QUESTIONS = [
+  {s:"S1", p:null, q:"問1：\nきのう 何（なに）を しましたか。", o:["駅（えき）へ 行（い）きます。","テレビを 見（み）ました。","ごはんです。","日本（にほん）です。"], a:1},
+  {s:"S1", p:null, q:"問2：\nあした だれと 映画（えいが）を 見（み）ますか。", o:["友達（ともだち）と","映画（えいが）で","映画（えいが）を","あした"], a:0},
+  {s:"S1", p:null, q:"問3：\nどこで 本（ほん）を 買（か）いましたか。", o:["スーパーで 買（か）いました。","スーパーへ 行（い）きます。","スーパーを 買（か）いました。","スーパーに 買（か）いました。"], a:0},
+  {s:"S1", p:null, q:"問4：\nいっしょに コーヒーを 飲（の）みませんか。", o:["はい、飲（の）みます。","いいえ、飲（の）みました。","はい、飲（の）みましょう。","コーヒーです。"], a:2},
+  {s:"S1", p:null, q:"問5：\nけさ 何（なに）を 食（た）べましたか。", o:["パンを 食（た）べました。","パンです。","パンに","パンで"], a:0},
+  {s:"S1", p:null, q:"問6：\nどこへ 行（い）きましたか。", o:["学校（がっこう）へ 行（い）きました。","学校（がっこう）で 行（い）きました。","学校（がっこう）を 行（い）きました。","学校（がっこう）に 行（い）きます。"], a:0},
+  {s:"S1", p:null, q:"問7：\nきのう 友達（ともだち）と ＿＿。", o:["会（あ）いました。","会（あ）います。","会（あ）いません。","会（あ）いましょう。"], a:0},
+  {s:"S1", p:null, q:"問8：\nどこで テニスを しますか。", o:["公園（こうえん）で します。","公園（こうえん）へ します。","公園（こうえん）を します。","公園（こうえん）に します。"], a:0},
+  {s:"S1", p:null, q:"問9：\nあした スーパーへ ＿＿か。", o:["行（い）きます","行（い）きました","行（い）きませんでした","行（い）きましょう"], a:0},
+  {s:"S1", p:null, q:"問10：\nいっしょに 駅（えき）へ 行（い）きませんか。", o:["はい、行（い）きません。","はい、行（い）きましょう。","いいえ、行（い）きましょう。","駅（えき）です。"], a:1},
+
+  {s:"S1", p:null, q:"問11：\nどこで ジュースを 飲（の）みますか。", o:["レストランで 飲（の）みます。","レストランへ 飲（の）みます。","レストランを 飲（の）みます。","レストランに 飲（の）みます。"], a:0},
+  {s:"S1", p:null, q:"問12：\nきのう 何（なに）も ＿＿。", o:["食（た）べました。","食（た）べませんでした。","食（た）べます。","食（た）べましょう。"], a:1},
+  {s:"S1", p:null, q:"問13：\nきょう 友達（ともだち）に ＿＿。", o:["会（あ）いました。","会（あ）いませんでした。","会（あ）います。","会（あ）いましょう。"], a:0},
+  {s:"S1", p:null, q:"問14：\nスーパーで 何（なに）を 買（か）いますか。", o:["牛乳（ぎゅうにゅう）を 買（か）います。","牛乳（ぎゅうにゅう）へ 買（か）います。","牛乳（ぎゅうにゅう）に 買（か）います。","牛乳（ぎゅうにゅう）です。"], a:0},
+  {s:"S1", p:null, q:"問15：\nあした いっしょに 勉強（べんきょう）＿＿か。", o:["します","しました","しませんでした","しましょう"], a:3},
+  {s:"S1", p:null, q:"問16：\nきのう 駅（えき）で だれに ＿＿。", o:["会（あ）いましたか。","会（あ）いますか。","会（あ）いませんか。","会（あ）いましょうか。"], a:0},
+  {s:"S1", p:null, q:"問17：\nあした どこへ 行（い）きますか。", o:["日本（にほん）へ 行（い）きます。","日本（にほん）で 行（い）きます。","日本（にほん）を 行（い）きます。","日本（にほん）に 行（い）きました。"], a:0},
+  {s:"S1", p:null, q:"問18：\nどこで 映画（えいが）を 見（み）ますか。", o:["映画館（えいがかん）で 見（み）ます。","映画館（えいがかん）へ 見（み）ます。","映画館（えいがかん）を 見（み）ます。","映画館（えいがかん）に 見（み）ます。"], a:0},
+  {s:"S1", p:null, q:"問19：\nいっしょに 公園（こうえん）で ＿＿か。", o:["遊（あそ）びます","遊（あそ）びました","遊（あそ）びませんでした","遊（あそ）びましょう"], a:3},
+  {s:"S1", p:null, q:"問20：\nきのう 友達（ともだち）と 映画（えいが）を ＿＿。", o:["見（み）ます","見（み）ました","見（み）ません","見（み）ましょう"], a:1},
+
+  {s:"S1", p:null, q:"問21：\n正（ただ）しい 文（ぶん）を えらんでください。\n\n駅（えき）\nで\n会（あ）いましょう\n10時（じゅうじ）に", o:["1-2-4-3","4-1-2-3","1-4-2-3","4-2-1-3"], a:1},
+  {s:"S1", p:null, q:"問22：\n正（ただ）しい 文（ぶん）を えらんでください。\n\nきのう\n友達（ともだち）\nと\n会（あ）いました", o:["1-2-3-4","2-3-1-4","1-3-2-4","4-1-2-3"], a:0},
+  {s:"S1", p:null, q:"問23：\n正（ただ）しい 文（ぶん）を えらんでください。\n\nわたしは\nスーパー\nで\nパン\nを\n買（か）いました", o:["1-2-3-4-5-6","1-3-2-4-5-6","2-1-3-4-5-6","1-2-4-3-5-6"], a:0},
+  {s:"S1", p:null, q:"問24：\n正（ただ）しい 文（ぶん）を えらんでください。\n\nあした\n映画（えいが）\nを\n見（み）ましょう", o:["1-2-3-4","2-1-3-4","1-3-2-4","2-3-1-4"], a:0},
+  {s:"S1", p:null, q:"問25：\n正（ただ）しい 文（ぶん）を えらんでください。\n\nどこ\nで\n本（ほん）\nを\n買（か）いましたか", o:["1-2-3-4-5","3-4-1-2-5","1-3-2-4-5","3-1-2-4-5"], a:0},
+
+  {s:"S1", p:null, q:"問26：\nいちばん いい ものを えらんでください。\n\nあした ＿＿へ 行（い）きます。", o:["きのう","学校（がっこう）","どこで","何（なに）を"], a:1},
+  {s:"S1", p:null, q:"問27：\n＿＿で ごはんを 食（た）べます。", o:["レストラン","レストランへ","レストランを","レストランに"], a:0},
+  {s:"S1", p:null, q:"問28：\nきのう 何（なに）も ＿＿。", o:["しませんでした","しました","します","しましょう"], a:0},
+  {s:"S1", p:null, q:"問29：\nいっしょに テニス＿＿か。", o:["します","しました","しませんでした","しましょう"], a:3},
+  {s:"S1", p:null, q:"問30：\nどこで その シャツを ＿＿。", o:["買（か）いましたか","買（か）いますか","買（か）いません","買（か）いましょう"], a:0},
+
+  {s:"S2", p:"読解（どっかい）\n\nきのう、わたしは 友達（ともだち）と スーパーへ 行（い）きました。\nスーパーで パンと ジュースを 買（か）いました。\nそれから、公園（こうえん）で ジュースを 飲（の）みました。\nそして、映画館（えいがかん）で 映画（えいが）を 見（み）ました。\nとても たのしかったです。", q:"問31：\nきのう、わたしは どこへ 行（い）きましたか。", o:["学校（がっこう）","スーパー","駅（えき）","うち"], a:1},
+  {s:"S2", p:"読解（どっかい）\n\nきのう、わたしは 友達（ともだち）と スーパーへ 行（い）きました。\nスーパーで パンと ジュースを 買（か）いました。\nそれから、公園（こうえん）で ジュースを 飲（の）みました。\nそして、映画館（えいがかん）で 映画（えいが）を 見（み）ました。\nとても たのしかったです。", q:"問32：\nスーパーで 何（なに）を 買（か）いましたか。", o:["パンと ジュース","本（ほん）","くつ","映画（えいが）"], a:0},
+  {s:"S2", p:"読解（どっかい）\n\nきのう、わたしは 友達（ともだち）と スーパーへ 行（い）きました。\nスーパーで パンと ジュースを 買（か）いました。\nそれから、公園（こうえん）で ジュースを 飲（の）みました。\nそして、映画館（えいがかん）で 映画（えいが）を 見（み）ました。\nとても たのしかったです。", q:"問33：\nどこで ジュースを 飲（の）みましたか。", o:["スーパー","公園（こうえん）","映画館（えいがかん）","うち"], a:1},
+  {s:"S2", p:"読解（どっかい）\n\nきのう、わたしは 友達（ともだち）と スーパーへ 行（い）きました。\nスーパーで パンと ジュースを 買（か）いました。\nそれから、公園（こうえん）で ジュースを 飲（の）みました。\nそして、映画館（えいがかん）で 映画（えいが）を 見（み）ました。\nとても たのしかったです。", q:"問34：\n映画（えいが）は どこで 見（み）ましたか。", o:["スーパー","公園（こうえん）","映画館（えいがかん）","学校（がっこう）"], a:2},
+  {s:"S2", p:"読解（どっかい）\n\nきのう、わたしは 友達（ともだち）と スーパーへ 行（い）きました。\nスーパーで パンと ジュースを 買（か）いました。\nそれから、公園（こうえん）で ジュースを 飲（の）みました。\nそして、映画館（えいがかん）で 映画（えいが）を 見（み）ました。\nとても たのしかったです。", q:"問35：\nきのうは どうでしたか。", o:["つまらなかったです。","いそがしかったです。","たのしかったです。","ひまでした。"], a:2}
+];
+
+const SECTION_NAMES = {
+  S1: 'Section 1 — Questions 1–30',
+  S2: 'Section 2 — Reading (31–35)'
+};
+
+const TOTAL_QUESTIONS = QUESTIONS.length;
+const TOTAL_MARKS = TOTAL_QUESTIONS;
+const TEST_DURATION_MINUTES = 30;
+
+let current = 0;
+let answers = new Array(TOTAL_QUESTIONS).fill(-1);
+let timerInterval = null;
+let secondsLeft = TEST_DURATION_MINUTES * 60;
+let studentName = '';
+let submitted = false;
+
+document.getElementById('q-total-top').textContent = TOTAL_QUESTIONS;
+
+function show(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function startTest() {
+  const n = document.getElementById('student-name').value.trim();
+  if (!n) {
+    document.getElementById('student-name').focus();
+    return;
+  }
+
+  studentName = n;
+  current = 0;
+  answers = new Array(TOTAL_QUESTIONS).fill(-1);
+  secondsLeft = TEST_DURATION_MINUTES * 60;
+  submitted = false;
+
+  buildDots();
+  renderQ();
+  show('test-screen');
+  startTimer();
+}
+
+function startTimer() {
+  clearInterval(timerInterval);
+  updateTimerDisplay();
+
+  timerInterval = setInterval(() => {
+    secondsLeft--;
+    updateTimerDisplay();
+
+    if (secondsLeft <= 0) {
+      clearInterval(timerInterval);
+      submitTest();
+    }
+  }, 1000);
+}
+
+function updateTimerDisplay() {
+  const m = Math.floor(secondsLeft / 60);
+  const s = secondsLeft % 60;
+  const el = document.getElementById('timer');
+  el.textContent = String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
+  el.className = 'timer' + (secondsLeft <= 300 ? ' warning' : '');
+}
+
+function buildDots() {
+  const row = document.getElementById('dots-row');
+  row.innerHTML = '';
+
+  for (let i = 0; i < TOTAL_QUESTIONS; i++) {
+    const d = document.createElement('div');
+    d.className = 'dot';
+    d.title = 'Q' + (i + 1);
+    d.onclick = () => {
+      current = i;
+      renderQ();
+    };
+    row.appendChild(d);
+  }
+}
+
+function updateDots() {
+  const dots = document.querySelectorAll('.dot');
+  dots.forEach((d, i) => {
+    d.className = 'dot' + (answers[i] !== -1 ? ' answered' : '') + (i === current ? ' current' : '');
+  });
+}
+
+function renderQ() {
+  const q = QUESTIONS[current];
+
+  document.getElementById('q-num').textContent = current + 1;
+  document.getElementById('sec-tag').textContent = SECTION_NAMES[q.s];
+  document.getElementById('prog').style.width = (((current + 1) / TOTAL_QUESTIONS) * 100) + '%';
+
+  const passArea = document.getElementById('passage-area');
+  passArea.innerHTML = q.p ? '<div class="passage-box">' + q.p + '</div>' : '';
+
+  document.getElementById('q-text').textContent = q.q;
+
+  const opts = document.getElementById('options');
+  const reviewNote = document.getElementById('review-note');
+  opts.innerHTML = '';
+  reviewNote.innerHTML = '';
+  reviewNote.className = '';
+
+  const letters = ['A', 'B', 'C', 'D'];
+
+  q.o.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    let cls = 'opt-btn';
+
+    if (submitted) {
+      if (i === q.a) cls += ' correct';
+      if (answers[current] === i && i !== q.a) cls += ' wrong';
+      if (answers[current] === i) cls += ' selected';
+      cls += ' disabled';
+    } else if (answers[current] === i) {
+      cls += ' selected';
+    }
+
+    btn.className = cls;
+    btn.innerHTML = '<span class="opt-letter">' + letters[i] + '</span>' + opt;
+    btn.onclick = () => selectAnswer(i);
+    opts.appendChild(btn);
+  });
+
+  if (submitted) {
+    const selected = answers[current];
+    const correctText = letters[q.a] + '. ' + q.o[q.a];
+
+    if (selected === q.a) {
+      reviewNote.className = 'review-note correct';
+      reviewNote.innerHTML = '✅ Correct. Your answer: <strong>' + correctText + '</strong>';
+    } else if (selected === -1) {
+      reviewNote.className = 'review-note wrong';
+      reviewNote.innerHTML = '⚠️ Not answered. Correct answer: <strong>' + correctText + '</strong>';
+    } else {
+      reviewNote.className = 'review-note wrong';
+      reviewNote.innerHTML = '❌ Wrong. Your answer: <strong>' + letters[selected] + '. ' + q.o[selected] + '</strong><br>✅ Correct answer: <strong>' + correctText + '</strong>';
+    }
+  }
+
+  document.getElementById('next-btn').textContent = current === TOTAL_QUESTIONS - 1 ? 'Finish →' : 'Next →';
+  updateDots();
+}
+
+function selectAnswer(i) {
+  if (submitted) return;
+  answers[current] = i;
+  renderQ();
+}
+
+function prevQ() {
+  if (current > 0) {
+    current--;
+    renderQ();
+  }
+}
+
+function nextQ() {
+  if (current < TOTAL_QUESTIONS - 1) {
+    current++;
+    renderQ();
+  } else {
+    confirmSubmit();
+  }
+}
+
+function confirmSubmit() {
+  if (submitted) {
+    show('result-screen');
+    return;
+  }
+
+  const unanswered = answers.filter(a => a === -1).length;
+  let msg = 'Are you sure you want to submit the test?';
+
+  if (unanswered > 0) {
+    msg = unanswered + ' question(s) are unanswered. ' + msg;
+  }
+
+  if (confirm(msg)) {
+    submitTest();
+  }
+}
+
+function getResultSummary() {
+  let correct = 0;
+  let wrong = 0;
+  let skipped = 0;
+  const secData = {};
+  let wrongQuestionsText = '';
+
+  Object.keys(SECTION_NAMES).forEach(k => {
+    secData[k] = { correct: 0, total: 0 };
+  });
+
+  QUESTIONS.forEach((q, i) => {
+    secData[q.s].total++;
+
+    if (answers[i] === -1) {
+      skipped++;
+    } else if (answers[i] === q.a) {
+      correct++;
+      secData[q.s].correct++;
+    } else {
+      wrong++;
+      wrongQuestionsText += 'Q' + (i + 1) + ': Wrong (Your: ' + q.o[answers[i]] + ', Correct: ' + q.o[q.a] + ')\n';
+    }
+  });
+
+  const score = correct;
+  const pct = Math.round((correct / TOTAL_QUESTIONS) * 100);
+
+  return {
+    correct,
+    wrong,
+    skipped,
+    score,
+    pct,
+    secData,
+    wrongQuestionsText: wrongQuestionsText || 'None',
+    timeTaken: document.getElementById('timer').textContent
+  };
+}
+
+function sendResultEmail(summary) {
+  emailjs.send("service_ubju8sb", "template_cd64f0d", {
+    student_name: studentName,
+    score: summary.score,
+    percentage: summary.pct + '%',
+    correct: summary.correct,
+    wrong: summary.wrong,
+    skipped: summary.skipped,
+    time_taken: summary.timeTaken,
+    wrong_questions: summary.wrongQuestionsText
+  }).then(function(response) {
+    console.log('Email sent successfully!', response.status, response.text);
+  }).catch(function(error) {
+    console.error('Email failed...', error);
+  });
+}
+
+function submitTest() {
+  clearInterval(timerInterval);
+  submitted = true;
+  const summary = getResultSummary();
+  showResult(summary);
+  sendResultEmail(summary);
+}
+
+function showResult(summary = getResultSummary()) {
+  document.getElementById('r-name').textContent = studentName;
+  document.getElementById('r-score').textContent = summary.score;
+  document.getElementById('r-pct').textContent = summary.correct + ' out of ' + TOTAL_QUESTIONS + ' questions correct • ' + summary.pct + '%';
+  document.getElementById('r-correct').textContent = summary.correct;
+  document.getElementById('r-wrong').textContent = summary.wrong;
+  document.getElementById('r-skip').textContent = summary.skipped;
+
+  const grade = document.getElementById('r-grade');
+  if (summary.pct >= 60) {
+    grade.textContent = '✓ PASSED — Well done, ' + studentName + '!';
+    grade.className = 'grade-badge grade-pass';
+  } else {
+    grade.textContent = '✗ FAILED — Keep studying, ' + studentName + '!';
+    grade.className = 'grade-badge grade-fail';
+  }
+
+  const secDiv = document.getElementById('r-sections');
+  secDiv.innerHTML = '';
+
+  Object.entries(summary.secData).forEach(([key, val]) => {
+    const pctSec = val.total > 0 ? Math.round((val.correct / val.total) * 100) : 0;
+    secDiv.innerHTML += `
+      <div class="sec-row">
+        <div class="sec-name">${key}</div>
+        <div class="sec-bar-wrap"><div class="sec-bar" style="width:${pctSec}%"></div></div>
+        <div class="sec-score">${val.correct}/${val.total}</div>
+      </div>`;
+  });
+
+  show('result-screen');
+}
+
+function reviewAnswers() {
+  current = 0;
+  renderQ();
+  show('test-screen');
+}
+
+function restartTest() {
+  show('start-screen');
+  document.getElementById('student-name').value = '';
+}
+</script>
+</body>
+</html>
